@@ -75,10 +75,7 @@ if has_plugins and config.llvm_plugin_ext:
     config.available_features.add('plugins')
 
 def calculate_arch_features(arch_string):
-    features = []
-    for arch in arch_string.split():
-        features.append(arch.lower() + '-registered-target')
-    return features
+    return [f'{arch.lower()}-registered-target' for arch in arch_string.split()]
 
 
 llvm_config.feature_config(
