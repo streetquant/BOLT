@@ -105,9 +105,8 @@ def prepend_dash(args: Mapping[AnyStr, AnyStr]) -> Sequence[AnyStr]:
     the option.
     Example: Namespace(o='test.tmp') -> ['-o', 'test.tmp']
     '''
-    dashed = [('-'+key,value) for (key,value) in args.items()]
-    flattened = list(sum(dashed, ()))
-    return flattened
+    dashed = [(f'-{key}', value) for (key,value) in args.items()]
+    return list(sum(dashed, ()))
 
 def replace_cmp_path(tmp: AnyStr, args: Mapping[AnyStr, AnyStr]) -> Sequence[AnyStr]:
     '''
@@ -154,9 +153,7 @@ def compare_logs(main, cmp, skip_end=0):
     return None
 
 def fmt_cmp(cmp_tuple):
-    if not cmp_tuple:
-        return ''
-    return f'main:\n{cmp_tuple[0]}\ncmp:\n{cmp_tuple[1]}\n'
+    return f'main:\n{cmp_tuple[0]}\ncmp:\n{cmp_tuple[1]}\n' if cmp_tuple else ''
 
 def compare_headers(lhs, rhs):
     '''
@@ -241,9 +238,7 @@ def main():
                 magic = f.read(4)
                 if magic != b'\x7fELF':
                     exit("output mismatch")
-            # check if ELF headers match
-            hdr = compare_headers(main_binary, cmp_binary)
-            if hdr:
+            if hdr := compare_headers(main_binary, cmp_binary):
                 print(fmt_cmp(hdr))
                 write_to(fmt_cmp(hdr), os.path.join(tmp, 'headers.txt'))
                 exit("headers mismatch")
